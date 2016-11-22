@@ -8,11 +8,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/core.jar"/>
 	<classpathentry kind="lib" path="libs/pde.jar"/>
-	<classpathentry kind="lib" path="lib/bcpkix-jdk15on-1.54.jar"/>
-	<classpathentry kind="lib" path="lib/bcprov-jdk15on-1.54.jar"/>
-	<classpathentry kind="lib" path="lib/ecc-25519-java-1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.7.21.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-nop-1.7.21.jar"/>
-	<classpathentry kind="lib" path="lib/sshj-0.16.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.5.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

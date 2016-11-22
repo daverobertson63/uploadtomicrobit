@@ -39,9 +39,6 @@ import java.lang.reflect.*;
 
 import javax.swing.JOptionPane;
 
-import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.transport.TransportException;
-import net.schmizz.sshj.userauth.UserAuthException;
 
 
 // XXX: there doesn't seem to be a way to handle the use pressing the stop button
@@ -50,6 +47,7 @@ import net.schmizz.sshj.userauth.UserAuthException;
 
 
 public class UploadToMicrobitTool implements Tool {
+	
   Base base;
   Thread t;
 
@@ -62,7 +60,7 @@ public class UploadToMicrobitTool implements Tool {
 
 
   public String getMenuTitle() {
-    return "Upload to Microbit";
+    return "Upload to BBC Microbit";
   }
 
 
@@ -84,6 +82,10 @@ public class UploadToMicrobitTool implements Tool {
     
     System.out.println("Mode is: " + mode.toString());
     System.out.println("Mode is: " + mode.getTitle());
+    
+    System.out.println("Sketchname is: " + sketchName);
+    System.out.println("Sketchpath is: " + sketchPath);
+    
     Sketch sketch = editor.getSketch();
 
     JOptionPane.showMessageDialog(null, "Mode is:" +mode.getTitle() );
@@ -142,6 +144,9 @@ public class UploadToMicrobitTool implements Tool {
     t = new Thread(new Runnable() {
       public void run() {
     	  
+    	  // Create new GUI and pass processing base
+    	  
+    	  GUI.GUIStart(base);
     	  // Do something in here
 
     
@@ -158,9 +163,6 @@ public class UploadToMicrobitTool implements Tool {
   }
 
 
-  public static SSHClient connect(String host, String username, String password) throws IOException, TransportException, UserAuthException {
-        return null;
-  }
 
 
   public void disconnect() {
