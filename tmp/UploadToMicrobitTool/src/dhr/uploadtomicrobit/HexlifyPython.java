@@ -34,7 +34,7 @@ public class HexlifyPython {
 		String simple="# Add your Python code here. E.g.\n";
 		simple = simple + "from microbit import *\n";
 		simple = simple + "while True:\n";
-		simple = simple + "\tdisplay.scroll('Fuck Me It Works!')\n";
+		simple = simple + "\tdisplay.scroll('Fuck You!')\n";
 		simple = simple + "\tdisplay.show(Image.HEART)\n";
 		simple = simple + "\tsleep(2000)\n";
 		

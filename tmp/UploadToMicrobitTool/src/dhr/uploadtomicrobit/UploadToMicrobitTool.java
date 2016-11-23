@@ -51,8 +51,7 @@ public class UploadToMicrobitTool implements Tool {
   Base base;
   Thread t;
 
-  String microbitLocation;
-  String firmwareLocation;
+  String hostname;
   String username;
   String password;
   boolean persistent;
@@ -190,11 +189,37 @@ public class UploadToMicrobitTool implements Tool {
 
 
   private void loadPreferences() {
-    microbitLocation = Preferences.get("dhr.uploadtomicrobit.microbit");
-    if (microbitLocation == null) {
-    	microbitLocation = "H:";
+    hostname = Preferences.get("gohai.uploadtopi.hostname");
+    if (hostname == null) {
+      hostname = "raspberrypi.local";
     }
-      }
+    username = Preferences.get("gohai.uploadtopi.username");
+    if (username == null) {
+      username = "pi";
+    }
+    password = Preferences.get("gohai.uploadtopi.password");
+    if (password == null) {
+      password = "raspberry";
+    }
+    String tmp = Preferences.get("gohai.uploadtopi.persistent");
+    if (tmp == null) {
+      persistent = true;
+    } else {
+      persistent = Boolean.parseBoolean(tmp);
+    }
+    tmp = Preferences.get("gohai.uploadtopi.autostart");
+    if (tmp == null) {
+      autostart = true;
+    } else {
+      autostart = Boolean.parseBoolean(tmp);
+    }
+    tmp = Preferences.get("gohai.uploadtopi.logging");
+    if (tmp == null) {
+      logging = true;
+    } else {
+      logging = Boolean.parseBoolean(tmp);
+    }
+  }
 
 
   public void removeAutostarts() throws IOException {
@@ -213,9 +238,12 @@ public class UploadToMicrobitTool implements Tool {
 
 
   public void savePreferences() {
-    Preferences.set("dhr.uploadtomicrobit.microbit", microbitLocation);
-    Preferences.set("dhr.uploadtomicrobit.firmware", firmwareLocation);
-    
+    Preferences.set("gohai.uploadtopi.hostname", hostname);
+    Preferences.set("gohai.uploadtopi.username", username);
+    Preferences.set("gohai.uploadtopi.password", password);
+    Preferences.setBoolean("gohai.uploadtopi.persistent", persistent);
+    Preferences.setBoolean("gohai.uploadtopi.autostart", autostart);
+    Preferences.setBoolean("gohai.uploadtopi.logging", logging);
   }
 
 

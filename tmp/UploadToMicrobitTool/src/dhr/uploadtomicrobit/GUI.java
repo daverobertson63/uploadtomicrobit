@@ -46,10 +46,6 @@ import processing.app.Sketch;
 import processing.app.tools.Tool;
 import processing.app.ui.Editor;
 import processing.app.ui.EditorConsole;
-import javax.swing.JToggleButton;
-import javax.swing.JCheckBox;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 
 public class GUI {
 
@@ -90,8 +86,6 @@ public class GUI {
 		
 		sketchName = editor.getSketch().getName();
 		sketchPath = editor.getSketch().getFolder().getAbsolutePath();
-		
-		// Now get preferences I hope
 	
 		initialize();
 	}
@@ -170,11 +164,6 @@ public class GUI {
 		frmMicrobit.getContentPane().add(microbitLocation);
 		microbitLocation.setColumns(10);
 
-		/*
-		 * Microbit Location
-		 * 
-		 */
-		
 		JButton btnNewButton_6 = new JButton("Microbit Location");
 		btnNewButton_6.addActionListener(new ActionListener() {
 
@@ -210,72 +199,14 @@ public class GUI {
 		frmMicrobit.getContentPane().add(btnNewButton_6);
 
 		JButton btnFirmwareLocation = new JButton("Firmware location");
-		btnFirmwareLocation.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// This is the firmware location - look for a Hex file ( .hex)
-				
-				int returnVal;
-
-				JFileChooser fileChooser = new JFileChooser();
-				FileNameExtensionFilter filter = new FileNameExtensionFilter(
-						"HEX files", "hex");
-				fileChooser.setFileFilter(filter);
-
-				File workingDirectory = new File(System.getProperty("user.dir"));
-				fileChooser.setCurrentDirectory(workingDirectory);
-
-				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-				returnVal = fileChooser.showOpenDialog(frmMicrobit);
-
-
-				if(returnVal == JFileChooser.APPROVE_OPTION) {
-					System.out.println("You chose to open this location: " +
-							fileChooser.getSelectedFile().getName());
-					microbitLocation.setText(new String(fileChooser.getSelectedFile().getName()));
-				}
-				fileChooser = null;
-
-				
-				
-				
-			}
-		});
 		btnFirmwareLocation.setBounds(28, 45, 125, 23);
 		frmMicrobit.getContentPane().add(btnFirmwareLocation);
 
 		firmwareLocation = new JTextField();
 		firmwareLocation.setText("Select");
 		firmwareLocation.setColumns(10);
-		firmwareLocation.setBounds(163, 46, 451, 20);
+		firmwareLocation.setBounds(163, 46, 530, 20);
 		frmMicrobit.getContentPane().add(firmwareLocation);
-		
-		/*
-		 * 	Checkbox Changes
-		 * 
-		 * 
-		 */
-		JCheckBox chckbxNewCheckBox = new JCheckBox("Built-In");
-		chckbxNewCheckBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent arg0) {
-				
-				if(arg0.getStateChange() == ItemEvent.SELECTED) {//checkbox has been selected
-					// Grey out the selector
-		            //do something...
-		        } else {//checkbox has been deselected
-		            //do something...
-		        };
-			
-			}
-		});
-		chckbxNewCheckBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				
-			}
-		});
-		chckbxNewCheckBox.setBounds(627, 45, 66, 23);
-		frmMicrobit.getContentPane().add(chckbxNewCheckBox);
 	}
 
 	private void loadWBList(DefaultListModel wbListNames )
