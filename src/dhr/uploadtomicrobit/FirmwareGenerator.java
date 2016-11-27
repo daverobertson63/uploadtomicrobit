@@ -111,6 +111,9 @@ public class FirmwareGenerator {
 		
 	{
 		
+		System.out.println("Sketch being processed");
+		System.out.println(script);
+		
 		StringBuilder output = new StringBuilder();
 		
 		output.append(MicrobitFirmware.getFirmware());

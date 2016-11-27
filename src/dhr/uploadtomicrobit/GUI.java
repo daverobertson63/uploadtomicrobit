@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
@@ -36,6 +37,9 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.apache.commons.io.FileUtils;
+
 import javax.swing.border.EtchedBorder;
 import javax.swing.JFileChooser;
 
@@ -60,13 +64,16 @@ public class GUI {
 	private Editor editor;
 	private String sketchName;
 	private String sketchPath;
-	
+	String userFirmware;
+	String microbitpath;
+
 	Base processingBase;
+	private File firmwareFile;
 	/**
 	 * Launch the application.
 	 */
 	public static void GUIStart(Base base) {
-		
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -83,17 +90,44 @@ public class GUI {
 	 * Create the application.
 	 */
 	public GUI(Base base) {
-		
+
 		this.processingBase = base;
-		
+
 		editor = processingBase.getActiveEditor();
-		
+
 		sketchName = editor.getSketch().getName();
 		sketchPath = editor.getSketch().getFolder().getAbsolutePath();
-		
+
 		// Now get preferences I hope
-	
+
+
+
+
+		/*
+		try {
+			//String str = FileUtils.readFileToString(firmwarefile, "UTF-8");
+			//System.out.println(str);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Put this into the firmware location if it exists
+		 */
+
+
+
 		initialize();
+
+		userFirmware = Preferences.get("dhr.uploadtomicrobit.firmware");
+		microbitpath = Preferences.get("dhr.uploadtomicrobit.microbit");
+
+		microbitLocation.setText(microbitpath);
+		firmwareLocation.setText(userFirmware);
+
+		//System.out.println(userFirmware);
+
+		//File firmwarefile = new File(userFirmware);
 	}
 
 	/**
@@ -103,48 +137,78 @@ public class GUI {
 		frmMicrobit = new JFrame();
 		frmMicrobit.setTitle("Microbit MicroPython Uploader");
 		frmMicrobit.setBounds(100, 100, 731, 204);
-		
+
 		frmMicrobit.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		frmMicrobit.getContentPane().setLayout(null);
 		//loadWBList(wbListNames );
 
-		JButton btnNewButton_1 = new JButton("Upload");
-		
+		JButton btnNewButton_1 = new JButton("Upload Sketch");
+
 		btnNewButton_1.putClientProperty( "sketchname", this.sketchName );
 		btnNewButton_1.putClientProperty( "sketchpath", this.sketchPath );
-		
+
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Update the index
-				
-				JOptionPane.showMessageDialog(null, "Now to upload to Microbit");
-				
+
+				int option = JOptionPane.showConfirmDialog(null, "Ready to push to microbit ?", "Update", JOptionPane.YES_NO_OPTION);
+
+				if (option != 0) { //The ISSUE is here
+					return;
+				}			
+
 				String sketchName = (String)((JButton)arg0.getSource()).getClientProperty( "sketchname" );
 				String sketchPath = (String)((JButton)arg0.getSource()).getClientProperty( "sketchpath" );
 
 				System.out.println("In Upload Action Listener");
-				
+
 				System.out.println("Sketchname is: " + sketchName);
-			    System.out.println("Sketchpath is: " + sketchPath);
+				System.out.println("Sketchpath is: " + sketchPath);
 
-			    System.out.println("Base Name is: " + processingBase.toString());
-			    
-				if (microbitLocation.getText().equals(""))
-				{
-					JOptionPane.showMessageDialog(null, "Please select a location for the Microbit");
-					return;
+				System.out.println("Base Name is: " + processingBase.toString());
+				editor = processingBase.getActiveEditor();
+
+				sketchName = editor.getSketch().getName();
+				sketchPath = editor.getSketch().getFolder().getAbsolutePath();
+				String sketchMainPath = editor.getSketch().getMainFilePath();
+
+				System.out.println("sketchMainPath is: " + sketchMainPath);
+
+				File sketchFile = new File(sketchMainPath);
+				FirmwareGenerator fg = new FirmwareGenerator();
+				File firmware = new File(sketchPath + File.separator +"firmware.hex");
+				File microbit = new File(microbitLocation.getText() + File.separator + "firmware.hex");
+
+				String sketch;
+				
+				try {
+					
+					sketch = FileUtils.readFileToString(sketchFile,"UTF-8");
+					
+					String output = fg.generateFirmware(sketch);
+					
+					FileUtils.writeStringToFile(firmware,output.toString(),Charset.forName("ISO-8859-1"));
+					
+					// Copy the file to the location
+					FileUtils.copyFile(firmware, microbit);
+					
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
-				int option = JOptionPane.showConfirmDialog(null, "Ready to Run update ?", "Update", JOptionPane.YES_NO_OPTION);
-
-				if (option == 0) { //The ISSUE is here
-					System.out.print("Yes");
-					// Copy the current sketch after hexlify
 
 
-				} else {
-					System.out.print("No");
-				}
+
+
+
+
+
+
+
+
+
+
 
 			}
 		});
@@ -157,11 +221,11 @@ public class GUI {
 				JOptionPane.showMessageDialog(null, "Cancel!");
 				frmMicrobit.setVisible(false); //you can't see me!
 				frmMicrobit.dispose(); //Destroy the JFrame object
-				
+
 			}
 		});
-		
-		btnNewButton_4.setBounds(388, 84, 125, 42);
+
+		btnNewButton_4.setBounds(568, 84, 125, 42);
 		frmMicrobit.getContentPane().add(btnNewButton_4);
 
 		microbitLocation = new JTextField();
@@ -174,7 +238,7 @@ public class GUI {
 		 * Microbit Location
 		 * 
 		 */
-		
+
 		JButton btnNewButton_6 = new JButton("Microbit Location");
 		btnNewButton_6.addActionListener(new ActionListener() {
 
@@ -200,6 +264,7 @@ public class GUI {
 					System.out.println("You chose to open this location: " +
 							fileChooser.getSelectedFile().getName());
 					microbitLocation.setText(new String(fileChooser.getSelectedFile().getName()));
+
 				}
 				fileChooser = null;
 
@@ -213,7 +278,7 @@ public class GUI {
 		btnFirmwareLocation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// This is the firmware location - look for a Hex file ( .hex)
-				
+
 				int returnVal;
 
 				JFileChooser fileChooser = new JFileChooser();
@@ -230,15 +295,16 @@ public class GUI {
 
 
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
-					System.out.println("You chose to open this location: " +
+					System.out.println("You chose this firmware file: " +
 							fileChooser.getSelectedFile().getName());
-					microbitLocation.setText(new String(fileChooser.getSelectedFile().getName()));
+
+					firmwareLocation.setText(new String(fileChooser.getSelectedFile().getAbsolutePath()));
 				}
 				fileChooser = null;
 
-				
-				
-				
+
+
+
 			}
 		});
 		btnFirmwareLocation.setBounds(28, 45, 125, 23);
@@ -247,35 +313,23 @@ public class GUI {
 		firmwareLocation = new JTextField();
 		firmwareLocation.setText("Select");
 		firmwareLocation.setColumns(10);
-		firmwareLocation.setBounds(163, 46, 451, 20);
+		firmwareLocation.setBounds(163, 46, 530, 20);
 		frmMicrobit.getContentPane().add(firmwareLocation);
-		
-		/*
-		 * 	Checkbox Changes
-		 * 
-		 * 
-		 */
-		JCheckBox chckbxNewCheckBox = new JCheckBox("Built-In");
-		chckbxNewCheckBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent arg0) {
-				
-				if(arg0.getStateChange() == ItemEvent.SELECTED) {//checkbox has been selected
-					// Grey out the selector
-		            //do something...
-		        } else {//checkbox has been deselected
-		            //do something...
-		        };
-			
-			}
-		});
-		chckbxNewCheckBox.addActionListener(new ActionListener() {
+
+		JButton btnSaveSettings = new JButton("Save Settings");
+		btnSaveSettings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				
+				// Save Setttings
+
+				// Save to prefernces folder
+				Preferences.set("dhr.uploadtomicrobit.microbit", microbitLocation.getText());
+				Preferences.set("dhr.uploadtomicrobit.firmware", firmwareLocation.getText());
+
+
 			}
 		});
-		chckbxNewCheckBox.setBounds(627, 45, 66, 23);
-		frmMicrobit.getContentPane().add(chckbxNewCheckBox);
+		btnSaveSettings.setBounds(369, 84, 125, 42);
+		frmMicrobit.getContentPane().add(btnSaveSettings);
 	}
 
 	private void loadWBList(DefaultListModel wbListNames )

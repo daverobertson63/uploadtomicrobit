@@ -47,87 +47,96 @@ import javax.swing.JOptionPane;
 
 
 public class UploadToMicrobitTool implements Tool {
-	
-  Base base;
-  Thread t;
 
-  String microbitLocation;
-  String firmwareLocation;
-  String username;
-  String password;
-  boolean persistent;
-  boolean autostart;
-  boolean logging;
+	Base base;
+	Thread t;
 
-
-  public String getMenuTitle() {
-    return "Upload to BBC Microbit";
-  }
+	String microbitLocation;
+	String firmwareLocation;
+	String defaultFirmware;
+	String username;
+	String password;
+	boolean persistent;
+	boolean autostart;
+	boolean logging;
 
 
-  public void init(Base base) {
-    this.base = base;
-    loadPreferences();
-    // saving the preferences adds them to the txt file for the user to edit
-    savePreferences();
-  }
+	public String getMenuTitle() {
+		return "Upload to BBC Microbit";
+	}
 
 
-  public void run() {
-	  
-    final Editor editor = base.getActiveEditor();
-    final String sketchName = editor.getSketch().getName();
-    final String sketchPath = editor.getSketch().getFolder().getAbsolutePath();
-    
-    Mode mode = editor.getMode();
-    
-    System.out.println("Mode is: " + mode.toString());
-    System.out.println("Mode is: " + mode.getTitle());
-    
-    System.out.println("Sketchname is: " + sketchName);
-    System.out.println("Sketchpath is: " + sketchPath);
-    
-    Sketch sketch = editor.getSketch();
+	public void init(Base base) {
+		this.base = base;
 
-    JOptionPane.showMessageDialog(null, "Mode is:" +mode.getTitle() );
-    
-    // this assumes the working directory is home at the beginning of a ssh/sftp session
-    // "~" didn't work (no such file)
-    final String dest = (persistent) ? "." : "/tmp";
+	}
 
-    // already running?
-    if (t != null) {
-      // terminate thread
-      t.interrupt();
-      try {
-        // wait for it to finish
-        t.join();
-      } catch (InterruptedException e) {
-        System.err.println("Error joining thread: " + e.getMessage());
-      }
-      t = null;
-      // the thread should already have called this, but in case it didn't
-      disconnect();
-    }
 
-    editor.getConsole().clear();
-    //editor.statusError("Saving Sketch before uploading to MB");
-    System.out.println("Welcome to Dave's Microbit Uploader");
-    editor.statusNotice("Attempting to save the sketch before uploading");
-    
-    
-    // this doesn't trigger the "Save as" dialog for unnamed sketches, but instead saves
-    // them in the temporary location that is also used for compiling
-    try {
-      editor.getSketch().save();
-    } catch (Exception e) {
-      editor.statusError("Cannot save sketch");
-      // DEBUG
-      e.printStackTrace();
-      System.err.println(e);
-      return;
-    }
-/*
+	public void run() {
+
+		final Editor editor = base.getActiveEditor();
+
+		final String toolsFolder = base.getSketchbookToolsFolder().getAbsolutePath();
+		final String sketchName = editor.getSketch().getName();
+		final String sketchPath = editor.getSketch().getFolder().getAbsolutePath();
+
+		Mode mode = editor.getMode();
+
+		System.out.println("Mode is: " + mode.toString());
+		System.out.println("Mode is: " + mode.getTitle());
+
+		System.out.println("Sketchname is: " + sketchName);
+		System.out.println("Sketchpath is: " + sketchPath);
+		System.out.println("Tool Folder is: " + toolsFolder);
+
+		defaultFirmware = toolsFolder + File.separator + "##project.name##" + File.separator + "tool" + File.separator + "firmware.hex";
+
+		System.out.println("Default Microbit Firmware file: " + defaultFirmware);
+		Sketch sketch = editor.getSketch();
+
+		//JOptionPane.showMessageDialog(null, "Mode is:" +mode.getTitle() );
+		loadPreferences();
+		// saving the preferences adds them to the txt file for the user to edit
+		savePreferences();
+
+
+		// this assumes the working directory is home at the beginning of a ssh/sftp session
+		// "~" didn't work (no such file)
+		final String dest = (persistent) ? "." : "/tmp";
+
+		// already running?
+		if (t != null) {
+			// terminate thread
+			t.interrupt();
+			try {
+				// wait for it to finish
+				t.join();
+			} catch (InterruptedException e) {
+				System.err.println("Error joining thread: " + e.getMessage());
+			}
+			t = null;
+			// the thread should already have called this, but in case it didn't
+			disconnect();
+		}
+
+		editor.getConsole().clear();
+		//editor.statusError("Saving Sketch before uploading to MB");
+		System.out.println("Welcome to Dave's Microbit Uploader");
+		editor.statusNotice("Attempting to save the sketch before uploading");
+
+
+		// this doesn't trigger the "Save as" dialog for unnamed sketches, but instead saves
+		// them in the temporary location that is also used for compiling
+		try {
+			editor.getSketch().save();
+		} catch (Exception e) {
+			editor.statusError("Cannot save sketch");
+			// DEBUG
+			e.printStackTrace();
+			System.err.println(e);
+			return;
+		}
+		/*
     try {
       exportSketch();
     } catch (Exception e) {
@@ -141,95 +150,111 @@ public class UploadToMicrobitTool implements Tool {
       }
       return;
     }
-*/
-    t = new Thread(new Runnable() {
-      public void run() {
-    	  
-    	  // Create new GUI and pass processing base
-    	  
-    	  GUI.GUIStart(base);
-    	  // Do something in here
+		 */
+		t = new Thread(new Runnable() {
+			public void run() {
 
-    
-      }
-    }, "Upload to Microbit");
+				// Create new GUI and pass processing base
 
-    t.start();
-  }
+				GUI.GUIStart(base);
+				// Do something in here
 
 
-  public void addAutostart(String dest, String sketchName) throws IOException {
-	  return;
-	  
-  }
+			}
+		}, "Upload to Microbit");
+
+		t.start();
+	}
+
+
+	public void addAutostart(String dest, String sketchName) throws IOException {
+		return;
+
+	}
 
 
 
 
-  public void disconnect() {
-    return;
-  }
+	public void disconnect() {
+		return;
+	}
 
 
-  public void exportSketch() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    
-	Editor editor = base.getActiveEditor();
-    Mode mode = editor.getMode();
-    Sketch sketch = editor.getSketch();
+	public void exportSketch() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
-    String oldSetting = Preferences.get("export.application.platform_linux");
-    Preferences.set("export.application.platform_linux", "true");
+		Editor editor = base.getActiveEditor();
+		Mode mode = editor.getMode();
+		Sketch sketch = editor.getSketch();
 
-    try {
-      Method javaModeMethod = mode.getClass().getMethod("handleExportApplication", sketch.getClass());
-      javaModeMethod.invoke(mode, sketch);
-    } finally {
-      Preferences.set("export.application.platform_linux", oldSetting);
-    }
-  }
+		String oldSetting = Preferences.get("export.application.platform_linux");
+		Preferences.set("export.application.platform_linux", "true");
 
+		try {
+			Method javaModeMethod = mode.getClass().getMethod("handleExportApplication", sketch.getClass());
+			javaModeMethod.invoke(mode, sketch);
+		} finally {
+			Preferences.set("export.application.platform_linux", oldSetting);
+		}
+	}
 
-  private void loadPreferences() {
-    microbitLocation = Preferences.get("dhr.uploadtomicrobit.microbit");
-    if (microbitLocation == null) {
-    	microbitLocation = "H:";
-    }
-      }
+	/*
+	 * Load preferences - but make sure we have something in the locations to get started and populate the 
+	 * preferences tab with something interesting
+	 * 
+	 * 
+	 */
 
+	private void loadPreferences() {
 
-  public void removeAutostarts() throws IOException {
-    
-  }
+		// Start with location of microbit - use a Windows based mapping
+		// TODO - add the Linux default location
 
+		microbitLocation = Preferences.get("dhr.uploadtomicrobit.microbit");
+		if (microbitLocation == null) {
+			microbitLocation = "H:";
+		}
 
-  public void removeSketch(String dest, String sketchName) throws IOException {
-    
-  }
-
-
-  public int runRemoteSketch(String dest, String sketchName) throws IOException {
-	  return 0;
-  }
-
-
-  public void savePreferences() {
-    Preferences.set("dhr.uploadtomicrobit.microbit", microbitLocation);
-    Preferences.set("dhr.uploadtomicrobit.firmware", firmwareLocation);
-    
-  }
+		// This is where we ship the default firmware file
+		firmwareLocation = Preferences.get("dhr.uploadtomicrobit.firmware");
+		if (firmwareLocation == null) {
+			firmwareLocation = defaultFirmware;
+		}
+	}
 
 
-  public void stopSketches() throws IOException {
-  
-  }
+	public void removeAutostarts() throws IOException {
+
+	}
 
 
-  public void syncDisks() throws IOException {
-  
-  }
+	public void removeSketch(String dest, String sketchName) throws IOException {
+
+	}
 
 
-  public void uploadSketch(String localDir, String dest, String sketchName) throws IOException {
-  
-  }
+	public int runRemoteSketch(String dest, String sketchName) throws IOException {
+		return 0;
+	}
+
+
+	public void savePreferences() {
+		Preferences.set("dhr.uploadtomicrobit.microbit", microbitLocation);
+		Preferences.set("dhr.uploadtomicrobit.firmware", firmwareLocation);
+
+	}
+
+
+	public void stopSketches() throws IOException {
+
+	}
+
+
+	public void syncDisks() throws IOException {
+
+	}
+
+
+	public void uploadSketch(String localDir, String dest, String sketchName) throws IOException {
+
+	}
 }
