@@ -115,7 +115,9 @@ public class FirmwareGenerator {
 		System.out.println(script);
 		
 		StringBuilder output = new StringBuilder();
+		StringBuilder tempScript = new StringBuilder();
 		
+		// Get the whole script into output.
 		output.append(MicrobitFirmware.getFirmware());
 			
 		// add header, pad to multiple of 16 bytes
@@ -134,7 +136,7 @@ public class FirmwareGenerator {
 	    int addr = 0x3e000; // magic start address in flash
 	    int[] chunk = new int[5 + 16];
 	    
-	    output.append(":020000040003F7\n");
+	    //output.append(":020000040003F7\n");
 	    
 	    for (int i = 0; i < data.length; i += 16, addr += 16) {
 	        chunk[0] = 16; // length of data section
@@ -149,12 +151,14 @@ public class FirmwareGenerator {
 	            checksum += chunk[j];
 	        }
 	        chunk[4 + 16] = (-checksum) & 0xff;
-	        output.append(':' + hexlify(chunk));
-	        output.append("\n");
+	        tempScript.append(':' + hexlify(chunk));
+	        tempScript.append("\n");
 	    }
 	    
-	    // Append the trailer records
-	    output.append(MicrobitFirmware.getFirmwareTrailer());
+	    // Simple replace strategy on the firmware should allow updates of the firmware
+	    replaceString(output,":::::::::::::::::::::::::::::::::::::::::::\n",tempScript.toString());
+	    
+	    //output.append(MicrobitFirmware.getFirmwareTrailer());
 	    
 	    // Return a full string - ready to copy
 	    return output.toString();
@@ -177,5 +181,46 @@ public class FirmwareGenerator {
         }
         return result.toString();
     }
+	
+	public void replaceAll(StringBuilder builder, String from, String to)
+	{
+	    int index = builder.indexOf(from);
+	    while (index != -1)
+	    {
+	        builder.replace(index, index + from.length(), to);
+	        index += to.length(); // Move to the end of the replacement
+	        index = builder.indexOf(from, index);
+	    }
+	}
+	
+	/**
+	* Utility method to replace the string from StringBuilder.
+	* @param sb          the StringBuilder object.
+	* @param toReplace   the String that should be replaced.
+	* @param replacement the String that has to be replaced by.
+	* 
+	*/
+	public static void replaceString(StringBuilder sb,
+	                                 String toReplace,
+	                                 String replacement) {     
+		
+		
+	   
+		int index = sb.indexOf(toReplace);
+		int end = index + toReplace.length();
+		
+		System.out.println("Index of pattern: " + index);
+		System.out.println("End of pattern: " + end);
+		System.out.println("Pattern : " + toReplace);
+		System.out.println("New Pattern : " + replacement);
+		
+		
+		sb.replace(index, end, replacement);
+		
+		
+		
+		//String tail = new String(sb.substring(end));	// tail conmponent
+		
+	}
 
 }

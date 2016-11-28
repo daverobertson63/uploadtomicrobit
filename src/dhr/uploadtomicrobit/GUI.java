@@ -148,13 +148,19 @@ public class GUI {
 		btnNewButton_1.putClientProperty( "sketchname", this.sketchName );
 		btnNewButton_1.putClientProperty( "sketchpath", this.sketchPath );
 
+		/*
+		 * Upload to the Microbit
+		 * 
+		 * 
+		 */
 		btnNewButton_1.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent arg0) {
-				// Update the index
+				
 
 				int option = JOptionPane.showConfirmDialog(null, "Ready to push to microbit ?", "Update", JOptionPane.YES_NO_OPTION);
 
-				if (option != 0) { //The ISSUE is here
+				if (option != 0) { // If reject then just return out of the listerner
 					return;
 				}			
 
@@ -191,6 +197,7 @@ public class GUI {
 					FileUtils.writeStringToFile(firmware,output.toString(),Charset.forName("ISO-8859-1"));
 					
 					// Copy the file to the location
+					System.out.println("Copy the hex firmware to microbit:" + microbit.toString());
 					FileUtils.copyFile(firmware, microbit);
 					
 				} catch (IOException e1) {
@@ -218,7 +225,7 @@ public class GUI {
 		JButton btnNewButton_4 = new JButton("Cancel");
 		btnNewButton_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Cancel!");
+				//JOptionPane.showMessageDialog(null, "Cancel!");
 				frmMicrobit.setVisible(false); //you can't see me!
 				frmMicrobit.dispose(); //Destroy the JFrame object
 
@@ -332,36 +339,5 @@ public class GUI {
 		frmMicrobit.getContentPane().add(btnSaveSettings);
 	}
 
-	private void loadWBList(DefaultListModel wbListNames )
-	{
-		List<Integer> list = new ArrayList<Integer>();
-		File file = new File("MasterWB.txt");
-		BufferedReader reader = null;
 
-		try {
-			reader = new BufferedReader(new FileReader(file));
-			String text = null;
-
-			while ((text = reader.readLine()) != null) {
-				wbListNames.addElement(text);
-				//list.add(Integer.parseInt(text));
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-			}
-		}
-
-		//print out the list
-		System.out.println(list);
-
-
-	}
 }

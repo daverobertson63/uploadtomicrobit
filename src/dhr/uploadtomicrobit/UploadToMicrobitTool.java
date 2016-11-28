@@ -83,7 +83,15 @@ public class UploadToMicrobitTool implements Tool {
 		Mode mode = editor.getMode();
 
 		System.out.println("Mode is: " + mode.toString());
-		System.out.println("Mode is: " + mode.getTitle());
+		
+		if ( !mode.toString().equals("Python"))
+		{
+			
+			JOptionPane.showMessageDialog(null, "This tool only works with Python Mode");
+			return;
+		}
+		
+		//System.out.println("Mode is: " + mode.getTitle());
 
 		System.out.println("Sketchname is: " + sketchName);
 		System.out.println("Sketchpath is: " + sketchPath);
