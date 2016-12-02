@@ -107,7 +107,6 @@ public class UploadToMicrobitTool implements Tool {
 		// saving the preferences adds them to the txt file for the user to edit
 		savePreferences();
 
-
 		// this assumes the working directory is home at the beginning of a ssh/sftp session
 		// "~" didn't work (no such file)
 		final String dest = (persistent) ? "." : "/tmp";

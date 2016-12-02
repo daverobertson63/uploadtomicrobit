@@ -152,11 +152,15 @@ public class FirmwareGenerator {
 	        }
 	        chunk[4 + 16] = (-checksum) & 0xff;
 	        tempScript.append(':' + hexlify(chunk));
-	        tempScript.append("\n");
+	        tempScript.append(System.lineSeparator());
 	    }
 	    
 	    // Simple replace strategy on the firmware should allow updates of the firmware
-	    replaceString(output,":::::::::::::::::::::::::::::::::::::::::::\n",tempScript.toString());
+	    //System.out.println(output.toString());
+	    //System.out.println(tempScript);
+	    
+	    
+	    replaceString(output,":::::::::::::::::::::::::::::::::::::::::::" + System.lineSeparator(),tempScript.toString());
 	    
 	    //output.append(MicrobitFirmware.getFirmwareTrailer());
 	    

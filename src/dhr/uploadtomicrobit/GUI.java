@@ -61,6 +61,7 @@ public class GUI {
 	private DefaultListModel wbListNames = new  DefaultListModel();
 	private JTextField microbitLocation;
 	private JTextField firmwareLocation;
+	private JCheckBox chckbxNewCheckBox;
 	private Editor editor;
 	private String sketchName;
 	private String sketchPath;
@@ -124,6 +125,33 @@ public class GUI {
 
 		microbitLocation.setText(microbitpath);
 		firmwareLocation.setText(userFirmware);
+		
+		chckbxNewCheckBox = new JCheckBox("Dont Copy to MB");
+		chckbxNewCheckBox.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent arg0) {
+				
+				if(arg0.getSource()==chckbxNewCheckBox){
+	                if(chckbxNewCheckBox.isSelected()) {
+	                    System.out.println("Sketch will not be copied to Microbit");
+	                //    JOptionPane.showMessageDialog(null, "Firmware will be created in the Processing sketch folder");
+	                    
+	                } else
+	                {
+	                	System.out.println("Sketch will be copied to Microbit - please ensure correct location");
+	                
+	                }
+	            }
+			}
+		});
+		chckbxNewCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// If we set this then it will 
+				
+			}
+		});
+		chckbxNewCheckBox.setBounds(233, 133, 126, 23);
+		frmMicrobit.getContentPane().add(chckbxNewCheckBox);
 
 		//System.out.println(userFirmware);
 
@@ -197,24 +225,17 @@ public class GUI {
 					FileUtils.writeStringToFile(firmware,output.toString(),Charset.forName("ISO-8859-1"));
 					
 					// Copy the file to the location
-					System.out.println("Copy the hex firmware to microbit:" + microbit.toString());
-					FileUtils.copyFile(firmware, microbit);
+					
+					if (!chckbxNewCheckBox.isSelected()) 
+					{
+						System.out.println("Copying the hex firmware to microbit:" + microbit.toString());
+						FileUtils.copyFile(firmware, microbit);
+					}
 					
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
-
-
-
-
-
-
-
-
-
-
 
 
 			}
@@ -338,6 +359,4 @@ public class GUI {
 		btnSaveSettings.setBounds(369, 84, 125, 42);
 		frmMicrobit.getContentPane().add(btnSaveSettings);
 	}
-
-
 }
