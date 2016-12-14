@@ -195,7 +195,7 @@ public class GUI {
 				String sketchName = (String)((JButton)arg0.getSource()).getClientProperty( "sketchname" );
 				String sketchPath = (String)((JButton)arg0.getSource()).getClientProperty( "sketchpath" );
 
-				System.out.println("In Upload Action Listener");
+				//System.out.println("In Upload Action Listener");
 
 				System.out.println("Sketchname is: " + sketchName);
 				System.out.println("Sketchpath is: " + sketchPath);
@@ -207,7 +207,7 @@ public class GUI {
 				sketchPath = editor.getSketch().getFolder().getAbsolutePath();
 				String sketchMainPath = editor.getSketch().getMainFilePath();
 
-				System.out.println("sketchMainPath is: " + sketchMainPath);
+				System.out.println("sketch Main Path is: " + sketchMainPath);
 
 				File sketchFile = new File(sketchMainPath);
 				FirmwareGenerator fg = new FirmwareGenerator();
@@ -230,10 +230,19 @@ public class GUI {
 					{
 						System.out.println("Copying the hex firmware to microbit:" + microbit.toString());
 						FileUtils.copyFile(firmware, microbit);
+						editor.statusNotice("Sketch has been uploaded to BBC Microbit");
+
+					}
+					else
+					{
+						editor.statusNotice("firmware.hex is now availabe in your sketch folder!");
+
 					}
 					
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
+					editor.statusError("Error in generating firmware - no upload to microbit :(");
+					
 					e1.printStackTrace();
 				}
 
@@ -275,9 +284,9 @@ public class GUI {
 				int returnVal;
 
 				JFileChooser fileChooser = new JFileChooser();
-				FileNameExtensionFilter filter = new FileNameExtensionFilter(
-						"Excel files", "xlsx");
-				fileChooser.setFileFilter(filter);
+				//FileNameExtensionFilter filter = new FileNameExtensionFilter(
+				//		"Excel files", "xlsx");
+				//fileChooser.setFileFilter(filter);
 
 				File workingDirectory = new File(System.getProperty("user.dir"));
 				fileChooser.setCurrentDirectory(workingDirectory);
@@ -287,12 +296,18 @@ public class GUI {
 
 				returnVal = fileChooser.showOpenDialog(frmMicrobit);
 
-
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
-					System.out.println("You chose to open this location: " +
-							fileChooser.getSelectedFile().getName());
-					microbitLocation.setText(new String(fileChooser.getSelectedFile().getName()));
-
+					
+					System.out.println("Current location is: " +
+							fileChooser.getCurrentDirectory().toString()) ;
+					
+					System.out.println("You chose to select this dir: " +
+							fileChooser.getSelectedFile().toString()) ;
+					
+					
+					String newMBPath = new String(fileChooser.getSelectedFile().toString());
+					microbitLocation.setText(newMBPath);
+					
 				}
 				fileChooser = null;
 
