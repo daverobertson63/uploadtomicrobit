@@ -220,6 +220,7 @@ public class GUI {
 					
 					sketch = FileUtils.readFileToString(sketchFile,"UTF-8");
 					
+					System.out.println("Generating a temp sketch file:"  + sketchFile.getName());
 					String output = fg.generateFirmware(sketch);
 					
 					FileUtils.writeStringToFile(firmware,output.toString(),Charset.forName("ISO-8859-1"));

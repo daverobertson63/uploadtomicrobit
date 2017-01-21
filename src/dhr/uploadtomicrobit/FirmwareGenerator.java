@@ -25,7 +25,7 @@
  * Hexifly the python code and combine with the firmware to create a single exe
  * 
  */
-package dhr.uploadtomicrobit;
+ package dhr.uploadtomicrobit;
 
 import java.io.File;
 import java.io.IOException;
@@ -119,6 +119,8 @@ public class FirmwareGenerator {
 		
 		// Get the whole script into output.
 		output.append(MicrobitFirmware.getFirmware());
+		
+		//System.out.println("Firmware is: " + output.toString());
 			
 		// add header, pad to multiple of 16 bytes
 	    int[] data = new int[4 + script.length() + (16 - (4 + script.length()) % 16)];
@@ -157,10 +159,9 @@ public class FirmwareGenerator {
 	    
 	    // Simple replace strategy on the firmware should allow updates of the firmware
 	    //System.out.println(output.toString());
-	    //System.out.println(tempScript);
+	    System.out.println(tempScript);
 	    
-	    
-	    replaceString(output,":::::::::::::::::::::::::::::::::::::::::::" + System.lineSeparator(),tempScript.toString());
+	    replaceString(output,":::::::::::::::::::::::::::::::::::::::::::" ,tempScript.toString());
 	    
 	    //output.append(MicrobitFirmware.getFirmwareTrailer());
 	    
@@ -210,12 +211,24 @@ public class FirmwareGenerator {
 		
 		
 	   
+		
+		System.out.println("Pattern : " + toReplace + " Len: " + toReplace.length());
+		
 		int index = sb.indexOf(toReplace);
+		
+		System.out.println("Index of pattern: " + index);
+		
+		if (index <= 0 ) 
+		{
+			System.out.println("Failed to see correct replacement pattern in firmware file");
+			sb.replace(0, 6, "Invalid");
+			return;
+		}
 		int end = index + toReplace.length();
+		
 		
 		System.out.println("Index of pattern: " + index);
 		System.out.println("End of pattern: " + end);
-		System.out.println("Pattern : " + toReplace);
 		System.out.println("New Pattern : " + replacement);
 		
 		
